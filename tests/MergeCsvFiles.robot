@@ -3,7 +3,7 @@ Library    CSVLibrary
 
 
 *** Test Cases ***
-Merge Files from a Folder
+Merge Files from a Folderd
     Merge Csv Files
     ...    ${CURDIR}\\..\\Examples
     ...    output_file=01_merged.csv
