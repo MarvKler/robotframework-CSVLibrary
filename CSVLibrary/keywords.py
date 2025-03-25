@@ -298,18 +298,8 @@ class Keywords(object):
         |    ...    ${DOWN_DIR}\\Folder02\\data.csv
         |    ...    MergedCustomData.csv
         """
-        # If given -> apply file filter
-        pattern = "*.csv"
-        if file_filter:
-            pattern = f"*{file_filter}*.csv"
-
-        # Fetch all given files / files in given directory
-        if len(csv_input) == 1 and Path(csv_input[0]).resolve().is_dir():
-            csv_files = sorted(Path(csv_input[0]).rglob(pattern))
-        else:
-            csv_files = [Path(p) for p in csv_input]
-        if not csv_files:
-            raise ValueError("No CSV files found!")
+        # Fetch matching files from file system
+        csv_files = self.kw._fetch_matching_files(csv_input, file_filter)
         
         # Merge found files
         all_rows = []
@@ -327,8 +317,8 @@ class Keywords(object):
                 if quote_count % 2 != 0:
                     line = line.replace('"', '""')
                 fixed_lines.append(line.strip())
-
             reader = csv.reader(fixed_lines)
+
             try:
                 file_header = next(reader)
             except Exception as e:
@@ -354,9 +344,5 @@ class Keywords(object):
             for i, row in enumerate(all_rows, start=1):
                 row[0] = str(i)
 
-        os.remove(output_file) if os.path.exists(output_file) else None
-        with open(output_file, "w", newline='', encoding="utf-8") as fout:
-            writer = csv.writer(fout)
-            writer.writerow(header)
-            writer.writerows(all_rows)
-            logger.info(f"File '{output_file}' has been written successfully!")
+        # Write content to csv file
+        self.kw._write_to_csv(output_file, all_rows, header)

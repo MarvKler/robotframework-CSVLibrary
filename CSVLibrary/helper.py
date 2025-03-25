@@ -1,5 +1,7 @@
 import csv
 import sys
+import os
+from pathlib import Path
 
 from robot.api import logger
 from robot.utils.dotdict import DotDict
@@ -69,3 +71,39 @@ class Helper(object):
 
     def _get_io(self):
         return IO
+    
+    # CSV Merge
+    def _fetch_matching_files(self,
+            csv_input: str,
+            file_filter: str
+        ):
+        # If given -> apply file filter
+        pattern = "*.csv"
+        if file_filter:
+            pattern = f"*{file_filter}*.csv"
+
+        # Fetch all given files / files in given directory
+        if len(csv_input) == 1 and Path(csv_input[0]).resolve().is_dir():
+            csv_files = sorted(Path(csv_input[0]).rglob(pattern))
+        else:
+            csv_files = [Path(p) for p in csv_input]
+        if not csv_files:
+            raise ValueError(f"No CSV files found for given input: {csv_input}")
+        return csv_files
+    
+    # CSV Merge
+    def _write_to_csv(self,
+            output_file: str,
+            rows: list,
+            header: list[str] = None,
+            delelte_file: bool = True
+        ):
+        if delelte_file:
+            os.remove(output_file) if os.path.exists(output_file) else None
+
+        with open(output_file, "w", newline='', encoding="utf-8") as fout:
+            writer = csv.writer(fout)
+            if header:
+                writer.writerow(header)
+            writer.writerows(rows)
+            logger.info(f"File '{output_file}' has been written successfully!")
