@@ -1,14 +1,13 @@
 import csv
 import sys
 from pathlib import Path
-from typing import Union, List
 import os
 
 from robot.api import logger
 from robot.api.deco import library, keyword
-from robot.utils.dotdict import DotDict
 from .helper import Helper, DotDictReader
 from .version import VERSION
+
 
 @library
 class Keywords(object):
@@ -24,7 +23,7 @@ class Keywords(object):
     def kw(self):
         self.helper = Helper()
         return self.helper
-    
+
     @property
     def io(self):
         self.IO = self.helper._get_io()
@@ -266,7 +265,7 @@ class Keywords(object):
         with self.io() as csv_handler:
             self.kw._write_csv(csv_handler, data, csv_writer=csv.DictWriter, **kwargs)
             return csv_handler.getvalue()
-        
+
     @keyword(tags=["CSVLibrary"])
     def merge_csv_files(self,
             *csv_input: str,
@@ -282,7 +281,8 @@ class Keywords(object):
         ``file_filter (str)`` -> regex pattern to merge only files with specific file name.\n
 
         = Use Case =
-        A lot of data is downloaded from your data storage & its downloaded into multiple CSV files for reasons like these files are separated into different folders with their related timestamp.\n
+        A lot of data is downloaded from your data storage & its downloaded into multiple CSV files for reasons 
+        like these files are separated into different folders with their related timestamp.\n
         Due to having the same data set & table headers, it makes sense to merge csv files for further csv data validation.
 
         = Example =
@@ -321,7 +321,8 @@ class Keywords(object):
 
             fixed_lines = []
             for line in lines:
-                # If mistakenly quotes are started but not ended in a linke lik "start & end" -> fix it (needed due to occurance in example tests)
+                # If mistakenly quotes are started but not ended in a linke lik "start & end"
+                # -> fix it (needed due to occurance in example tests)
                 quote_count = line.count('"')
                 if quote_count % 2 != 0:
                     line = line.replace('"', '""')

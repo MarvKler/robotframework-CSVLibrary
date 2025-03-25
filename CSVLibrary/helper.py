@@ -9,9 +9,11 @@ if sys.version_info.major >= 3:
 else:
     from io import BytesIO as IO
 
+
 class DotDictReader(csv.DictReader):
     def __next__(self):
         return DotDict(super().__next__())
+
 
 class Helper(object):
 
@@ -67,4 +69,3 @@ class Helper(object):
 
     def _get_io(self):
         return IO
-
